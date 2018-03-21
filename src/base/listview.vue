@@ -1,7 +1,7 @@
 <template>
-<scroll class="listview" :data="data">
+<scroll class="listview" :data="data" ref="listview" :listenScroll="listenScroll" @scroll="scroll">
 		<ul>
-			<li v-for="group in data" class="list-group">
+			<li v-for="group in data" class="list-group" ref="listGroup">
 				<h2 class="list-group-title">{{group.title}}</h2>
 				<ul>
 					<li v-for="item in group.items" class="list-group-item">
@@ -11,6 +11,13 @@
 				</ul>
 			</li>
 		</ul>
+		<div class="list-shortcut" @touchstart="onShortcutTouchStart" @touchmove.stop.prevent="onShortcutTouchMove">
+			<ul>
+				<li v-for="(item,index) in shortcutList" class="item"  :data-index="index">
+					{{item}}
+				</li>
+			</ul>
+		</div>
 	 	<div v-show="!data.length" class="loading-container">
      		 <loading></loading>
    		</div>
@@ -21,11 +28,56 @@
 <script>	
 	import Scroll from './scroll.vue'
 	import Loading from './loading'
+	const HEIGHT=18
 	export default{
+		created(){
+			this.touch={},
+			this.listenScroll=true
+		},
 		props:{
 			data:{
 				type:Array,
 				default:[]
+			}
+		},
+		data(){
+			return {
+			scrollY:-1,
+			currentIndex:0
+				
+			}
+
+		},
+		computed:{
+			shortcutList(){
+				return this.data.map((group)=>{
+//					console.log(group.title)
+				//因为存的是热门 所以此处截取
+					return group.title.substr(0,1)
+				})
+			}
+		},
+		methods:{
+			onShortcutTouchStart(e){
+				//获取点击右侧栏目的下标index
+				let anchorIndex=e.target.getAttribute('data-index');
+//				console.log(anchorIndex)
+				let firstTouch=e.touches[0];
+				this.touch.y1=firstTouch.pageY;
+				this.touch.anchorIndex=anchorIndex
+				this.$refs.listview.scrollToElement(this.$refs.listGroup[anchorIndex],0)
+			},
+			onShortcutTouchMove(e){
+				//当前移动的第一个位置
+				let firstTouch=e.touches[0];
+//				console.log(firstTouch)
+				this.touch.y2=firstTouch.pageY;
+				let dalta=Math.floor((this.touch.y2-this.touch.y1)/HEIGHT)
+				let anchorIndex=parseInt(this.touch.anchorIndex)+dalta
+				this.$refs.listview.scrollToElement(this.$refs.listGroup[anchorIndex],0)				
+			},
+			scroll(pos){
+				this.scrollY=pos.y
 			}
 		},
 		components:{
@@ -77,11 +129,12 @@
 		right: 0;
 		top: 50%;
 		transform: translateY(-50%);
-		width: 20px;
+		/*width: 20px;*/
 		padding: 20px 0;
 		border-radius: 10px;
 		text-align: center;
 		background: rgba(0, 0, 0, 0.3);
+		/*background: cyan;*/
 		font-family: helvetica;
 	}
   	.item{
