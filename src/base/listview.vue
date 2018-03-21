@@ -78,7 +78,8 @@
 			},
 			scroll(pos){
 				this.scrollY=pos.y
-			}
+			},
+			_calculate
 		},
 		components:{
 			Scroll,
