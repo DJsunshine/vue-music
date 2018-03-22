@@ -7,6 +7,8 @@ import VueSwiper from 'vue-awesome-swiper'
 import VueLazyLoad from 'vue-lazyload'
 
 import logo from './assets/default.png'
+
+import store from './store/state'
 Vue.config.productionTip = false
 
 require('swiper/dist/css/swiper.css')
@@ -20,5 +22,6 @@ new Vue({
   el: '#app',
   router,
   components: { App },
-  template: '<App/>'
+  template: '<App/>',
+  store
 })

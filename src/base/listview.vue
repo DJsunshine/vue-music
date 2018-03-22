@@ -4,7 +4,7 @@
 			<li v-for="group in data" class="list-group" ref="listGroup">
 				<h2 class="list-group-title">{{group.title}}</h2>
 				<ul>
-					<li v-for="item in group.items" class="list-group-item">
+					<li @click="selectItem(item)" v-for="(item,index) in group.items" class="list-group-item">
 						<img class="avatar" v-lazy="item.avatar" alt="" />
 						<span class="name">{{item.name}}</span>
 					</li>
@@ -51,13 +51,16 @@
 		computed:{
 			shortcutList(){
 				return this.data.map((group)=>{
-//					console.log(group.title)
 				//因为存的是热门 所以此处截取
 					return group.title.substr(0,1)
 				})
 			}
 		},
 		methods:{
+			selectItem(item){
+				this.$emit("select",item)
+			},
+				//鼠标点击
 			onShortcutTouchStart(e){
 				//获取点击右侧栏目的下标index
 				let anchorIndex=e.target.getAttribute('data-index');
@@ -65,8 +68,9 @@
 				let firstTouch=e.touches[0];
 				this.touch.y1=firstTouch.pageY;
 				this.touch.anchorIndex=anchorIndex
-				this.$refs.listview.scrollToElement(this.$refs.listGroup[anchorIndex],0)
+				this.$refs.listview.scrollToElement(this.$refs.listGroup[anchorIndex],2)
 			},
+			//鼠标拖动
 			onShortcutTouchMove(e){
 				//当前移动的第一个位置
 				let firstTouch=e.touches[0];
@@ -78,8 +82,7 @@
 			},
 			scroll(pos){
 				this.scrollY=pos.y
-			},
-			_calculate
+			}
 		},
 		components:{
 			Scroll,

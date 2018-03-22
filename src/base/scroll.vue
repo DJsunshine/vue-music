@@ -33,11 +33,10 @@
 		mounted(){
 			setTimeout(()=>{
 				this._initScroll()
-			},20)
+			},10)
 		},
 		methods:{
 			_initScroll(){
-				console.log("ok")
 				if(!this.$refs.wrapper){
 					return 
 				}
