@@ -4,13 +4,27 @@
 			<i class="icon-back">&lt;</i>
 		</div>
 		<h1 class="title" v-html="title"></h1>
-		<div class="bg-image" :style="bgStyle">
+		<div class="bg-image" :style="bgStyle" ref="bgImages">
 			<div class="filter"></div>
 		</div>
+		<div class="bg-layer" ref="layer">
+			
+		</div>
+		<scroll @scroll="scroll" :probe-type="probeType" :listen-scroll="listenScroll" :data="songs" class="list" ref="list">
+			<div class="song-list-wrapper" style="top: 100px;">
+				<song-list :songs="songs">
+					
+				</song-list>
+			</div>
+		</scroll>
 	</div>
 </template>
 
 <script>
+	import Scroll from '../base/scroll'
+	import SongList from './song-list'
+	
+	const NUM=40
 	export default{
 		props:{
 			bgImage:{
@@ -30,6 +44,51 @@
 			bgStyle(){
 				return `background-image:url(${this.bgImage})`
 			}
+		},
+		data(){
+			return {
+				scrollY:0
+			}
+		},
+		methods:{
+			scroll(pos){
+				this.scrollY=pos.y
+			}
+		},
+		watch:{
+			scrollY(newY){
+				let tranlateY=Math.max(this.minTranslateY,newY)
+				let zIndex=0
+				this.$refs.layer.style['transform']=`translate3d(0,${tranlateY}px,0)`
+				this.$refs.layer.style['webkitTransform']=`translate3d(0,${tranlateY}px,0)`
+				//当滚动距离滚动到顶部的时候
+				if(newY<this.minTranslateY){
+					console.log(newY+"---"+this.minTranslateY)
+					zIndex=10
+					this.$refs.bgImages.style.paddingTop=0
+					this.$refs.bgImages.style.height=`${NUM}px`		
+				}else{
+					console.log(newY+"---"+this.minTranslateY)
+					
+					this.$refs.bgImages.style.paddingTop='70%'
+					this.$refs.bgImages.style.height=0		
+				}
+				this.$refs.bgImages.style.zIndex=zIndex
+			}
+		},
+		created(){
+			 this.probeType=3
+			 this.listenScroll=true
+		},
+		//mounted的时候el刚好被挂载
+		mounted(){
+			this.imageHeight=this.$refs.bgImages.clientHeight
+			this.minTranslateY=-this.imageHeight+NUM
+			this.$refs.list.$el.style.top=`${this.$refs.bgImages.clientHeight}px`
+		},
+		components:{
+			Scroll,
+			SongList
 		}
 	}
 </script>

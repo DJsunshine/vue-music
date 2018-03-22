@@ -42,6 +42,7 @@
 					if(res.code===ERR_OK){
 						console.log(res.data.list)
 						this.songs=this.song(res.data.list)
+//						console.log(this.songs)
 					}
 				})
 			},
@@ -60,13 +61,13 @@
 				let arr=[]
 				for(let i of list){
 					let a=i.musicData
-					if(a.songid && a.albumid){
+					if(a.songid && a.albummid){
 						arr.push({
 						id:a.songid,
 						mid:a.songmid,
 						singer:this.singers(a.singer),
 						name:a.songname,
-						album:a.albumid,
+						album:a.albumname,
 						duration:a.interval,
 						image:`https://y.gtimg.cn/music/photo_new/T002R300x300M000${a.albummid}.jpg?max_age=2592000`,
 						url:`https://ws.stream.qqmusic.qq.com/${a.songid}.m4a?fromtag=46`
