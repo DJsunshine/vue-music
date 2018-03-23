@@ -1,10 +1,16 @@
 <template>
 	<div class="music-list">
-		<div class="back">
+		<div class="back" @click="back">
 			<i class="icon-back">&lt;</i>
 		</div>
 		<h1 class="title" v-html="title"></h1>
 		<div class="bg-image" :style="bgStyle" ref="bgImages">
+			<div class="play-wrapper">
+				<div class="play" v-show="songs.length>0" ref="playBtn">
+					<i class="icon-play"></i>
+					<span class="text">随机播放全部</span>
+				</div>
+			</div>
 			<div class="filter"></div>
 		</div>
 		<div class="bg-layer" ref="layer">
@@ -12,9 +18,12 @@
 		</div>
 		<scroll @scroll="scroll" :probe-type="probeType" :listen-scroll="listenScroll" :data="songs" class="list" ref="list">
 			<div class="song-list-wrapper" style="top: 100px;">
-				<song-list :songs="songs">
+				<song-list @selects="selectItem" :songs="songs">
 					
 				</song-list>
+			</div>
+			<div class="loading-container" v-show="!songs.length">
+				<loading></loading>
 			</div>
 		</scroll>
 	</div>
@@ -23,7 +32,8 @@
 <script>
 	import Scroll from '../base/scroll'
 	import SongList from './song-list'
-	
+	import Loading from '../base/loading'
+	import {mapActions} from 'vuex'
 	const NUM=40
 	export default{
 		props:{
@@ -53,27 +63,51 @@
 		methods:{
 			scroll(pos){
 				this.scrollY=pos.y
-			}
+			},
+			back(){
+				this.$router.back()
+			},
+			selectItem(item,index){
+				this.selectPlay({
+					list:this.songs,
+					index
+				})
+			},
+			...mapActions([
+				'selectPlay'
+			])
 		},
 		watch:{
 			scrollY(newY){
 				let tranlateY=Math.max(this.minTranslateY,newY)
 				let zIndex=0
+				let scale=1
 				this.$refs.layer.style['transform']=`translate3d(0,${tranlateY}px,0)`
 				this.$refs.layer.style['webkitTransform']=`translate3d(0,${tranlateY}px,0)`
+					//abs 绝对值 图片高度*scale =percent +1 再成乘 imageHeight
+				const percent=Math.abs(newY/this.imageHeight)
+				if(newY>0){
+					scale+=percent
+					zIndex=10
+				}
+				
 				//当滚动距离滚动到顶部的时候
 				if(newY<this.minTranslateY){
 					console.log(newY+"---"+this.minTranslateY)
 					zIndex=10
 					this.$refs.bgImages.style.paddingTop=0
-					this.$refs.bgImages.style.height=`${NUM}px`		
+					this.$refs.bgImages.style.height=`${NUM}px`	
+					this.$refs.playBtn.style.display='none'
 				}else{
 					console.log(newY+"---"+this.minTranslateY)
 					
 					this.$refs.bgImages.style.paddingTop='70%'
 					this.$refs.bgImages.style.height=0		
+					this.$refs.playBtn.style.display=''
 				}
 				this.$refs.bgImages.style.zIndex=zIndex
+				this.$refs.bgImages.style['transform']=`scale(${scale})`
+				this.$refs.bgImages.style['webkitTransform']=`scale(${scale})`
 			}
 		},
 		created(){
@@ -88,7 +122,8 @@
 		},
 		components:{
 			Scroll,
-			SongList
+			SongList,
+			Loading
 		}
 	}
 </script>
@@ -150,7 +185,7 @@
 		text-align: center;
 		border: 1px solid #FFCD32;
 		color: #FFCD32;
-		border-radius: 100%;
+		border-radius: 100px;
 		font-size: 0;
 	}
 	.icon-play{

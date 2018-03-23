@@ -5,12 +5,14 @@
     <keep-alive>
     <router-view></router-view>
     </keep-alive>
+    <player></player>
   </div>
 </template>
 
 <script>
 	import MHeader from './components/m-header'
 	import Tab from './components/tabl'
+	import Player from './components/player'
 		//设置html的font-size
 (function(window){
 		var winW = document.documentElement.clientWidth || document.body.clientWidth;
@@ -29,11 +31,13 @@ export default {
   },
   components:{
   	MHeader,
-  	Tab
+  	Tab,
+  	Player
   }
 }
 </script>
 
 <style>
 @import url("../static/css/reset.css");
+
 </style>

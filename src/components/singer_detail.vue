@@ -42,7 +42,7 @@
 					if(res.code===ERR_OK){
 						console.log(res.data.list)
 						this.songs=this.song(res.data.list)
-//						console.log(this.songs)
+						console.log(this.songs)
 					}
 				})
 			},
@@ -70,7 +70,8 @@
 						album:a.albumname,
 						duration:a.interval,
 						image:`https://y.gtimg.cn/music/photo_new/T002R300x300M000${a.albummid}.jpg?max_age=2592000`,
-						url:`https://ws.stream.qqmusic.qq.com/${a.songid}.m4a?fromtag=46`
+						url: `http://isure.stream.qqmusic.qq.com/C100${a.songmid}.m4a?fromtag=32`
+//						`http://ws.stream.qqmusic.qq.com/${a.songid}.m4a?fromtag=46`
 					})	
 					}
 				}
