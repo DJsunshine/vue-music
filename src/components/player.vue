@@ -22,17 +22,24 @@
 				</div>
 			</div>
 			<div class="bottom">
+				<div class="progress-wrapper">
+					<span class="time time-l">{{format(currentTime)}}</span>
+					<div class="progress-bar-wrapper">
+						<progress-bar :percent="percent"></progress-bar>
+					</div>
+					<span class="time time-r">{{format(currentSong.duration)}}</span>
+				</div>
 				<div class="operators">
 					<div class="icon i-left">
 						<i class="glyphicon glyphicon-random"></i>
 					</div>
-					<div class="icon i-left">
+					<div class="icon i-left" :class="disableCls">
 						<i @click="prev" class="glyphicon glyphicon-backward"></i>
 					</div>
-					<div class="icon i-center">
+					<div class="icon i-center" :class="disableCls">
 						<i @click="togglePlaying" class="glyphicon" :class="playIcon"></i>
 					</div>
-					<div class="icon i-right">
+					<div class="icon i-right" :class="disableCls">
 						<i @click="next" class="glyphicon glyphicon-forward"></i>
 					</div>
 					<div class="icon i-right">
@@ -45,7 +52,9 @@
 		<transition name="mini">
 		<div class="mini-player" v-show="!fullScreen" @click="open">
 			<div class="icon">
-				<img width="40" height="40" :src="currentSong.image" />
+				<div class="imgWrapper" :class="cdCls">
+					<img width="40" height="40" :src="currentSong.image" />					
+				</div>
 			</div>
 			<div class="text">
 				<h2 class="name" v-html="currentSong.name"></h2>
@@ -59,27 +68,38 @@
 			</div>
 		</div>
 		</transition>
-		<audio @canplay="ready" @error="error" ref="audio" :src="currentSong.url"></audio>
+		<audio @timeupdate="updateTime" @canplay="ready" @error="error" ref="audio" :src="currentSong.url"></audio>
 	</div>
 </template>
 
 <script>
 	import { mapGetters,mapMutations } from 'vuex'
+	import ProgressBar from '../base/progress-bar'
 	export default {
+		components:{
+			ProgressBar
+		},
 		data(){
 			return {
-				songReady:false
+				songReady:false,
+				currentTime:0
 			}
 		},
 		computed: {
 			cdCls(){
-				return this.playing?"play":"play"
+				return this.playing?"play":"pause"
 			},
 			playIcon(){
 				return this.playing?"glyphicon-pause":"glyphicon-play"
 			},
 			miniIcon(){
 				return this.playing?"glyphicon-pause":"glyphicon-play-circle"
+			},
+			disableCls(){
+				return this.songReady?'':'disable'
+			},
+			percent(){
+				return this.currentTime / this.currentSong.duration
 			},
 			...mapGetters([
 				'fullScreen',
@@ -90,6 +110,23 @@
 			]),
 		},
 		methods:{
+			format(interval){
+				interval=interval | 0
+				const minute=interval /60 |0
+				const second=this._pad(interval%60)
+				return `${minute}:${second}`
+			},
+			_pad(num,n=2){
+				let len=num.toString().length
+				while (len<n){
+					num='0'+num
+					len++
+				}
+				return num
+			},
+			updateTime(e){
+				this.currentTime=e.target.currentTime
+			},
 			next(){
 				if(!this.songReady){
 					return 
@@ -123,7 +160,8 @@
 				this.songReady=true
 			},
 			error(){
-				
+				//加载失败或者网络问题的时候 也要保证功能的使用
+				this.songReady=true
 			},
 			open(){
 				this.setFullScreen(true)
@@ -260,11 +298,18 @@
   border-radius: 50%;
   border: 10px solid rgba(255,255,255,0.1);
 }
-.cd  .play{
+.cd .play{
 	animation: rotate 20s linear infinite;
 }
 .cd .pause{
-	-moz-animation-play-state: paused;
+	animation-play-state: paused;	
+}
+.icon .play{
+	animation: rotate 20s linear infinite;
+	
+}
+.icon .pause{
+	animation-play-state: paused;	
 	
 }
  .playing-lyric-wrapper {
@@ -330,9 +375,7 @@
   background: rgba(255,255,255,0.8);
 }
 .player .normal-player .bottom .progress-wrapper {
-  display: -ms-flexbox;
   display: flex;
-  -ms-flex-align: center;
       align-items: center;
   width: 80%;
   margin: 0px auto;
@@ -353,8 +396,8 @@
   text-align: right;
 }
 .player .normal-player .bottom .progress-wrapper .progress-bar-wrapper {
-  -ms-flex: 1;
       flex: 1;
+      /*background: #222;*/
 }
 .player .normal-player .bottom .operators {
   display: -ms-flexbox;
@@ -437,6 +480,7 @@
   /*width: 40px;*/
   height: 40px;
   padding: 0 10px 0 20px;
+  border-radius: 50%;
 }
  .mini-player .icon .imgWrapper {
   height: 100%;
@@ -492,7 +536,7 @@
   left: 0;
   top: 0;
 }
-@keyframes rotate-data-v-35618e92 {
+@keyframes rotate {
 0% {
     transform: rotate(0);
 }
