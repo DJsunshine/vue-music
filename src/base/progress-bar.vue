@@ -3,7 +3,7 @@
     	<div class="bar-inner">
      	 	<div class="progress" ref="progress"></div>
       			<div class="progress-btn-wrapper" ref="progressBtn"
-      >
+      			>
         		<div class="progress-btn"></div>
      		 </div>
     	</div>
@@ -24,11 +24,12 @@
 //				console.log(newPercent)
 				if(newPercent>=0){
 					const barWidth=this.$refs.progressBar.clientWidth-ball
-					console.log(barWidth)
+//					console.log(barWidth)
 					const offsetWidth=newPercent * barWidth
 					this.$refs.progress.style.width=`${offsetWidth}px`
 					this.$refs.progressBtn.style['transform']=`translate3d(${offsetWidth}px,0,0)`
-//				this.$refs.layer.style['transform']=`translate3d(0,${tranlateY}px,0)`
+					this.$refs.progressBtn.style['webkitTransform']=`translate3d(${offsetWidth}px,0,0)`
+					
 					
 				}
 			}

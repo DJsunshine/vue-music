@@ -14,6 +14,8 @@ const state={
 	sequenceList:[],//随机列表
 	mode:playMode.sequence,//播放模式
 	currentIndex:-1,//当前播放的索引
+	disc:{},//歌单对象
+	topList:{}//排行榜
 }
 
 const mutations={
@@ -38,6 +40,12 @@ const mutations={
 	},
 	SET_CURRENT_INDEX(state,index){
 		state.currentIndex=index
+	},
+	SET_DISC(state,disc){
+		state.disc=disc
+	},
+	SET_TOP_LIST(state,topList){
+		state.topList=topList
 	}
 	
 }
@@ -77,6 +85,12 @@ const getters={
 	},
 	currentSong(state){
 		return state.playlist[state.currentIndex] || {}
+	},
+	disc(state){
+		return state.disc
+	},
+	topList(){
+		return state.topList
 	}
 }
 

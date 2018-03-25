@@ -1,49 +1,48 @@
 <template>
 	<transition name="slide">
-	<music-list :title="title" :bg-image="bgImage" :songs="songs"></music-list>
+		<music-list :title="title" :bgImage="bgImage"  :songs="songs"></music-list>
 	</transition>
 </template>
 
 <script>
-	import {mapGetters} from 'vuex'
-	import {getSingerDetail} from '../api/singer'
-	import {ERR_OK} from '../api/config'
 	import MusicList from './music-list'
+	import {mapGetters} from 'vuex'
+	import {getSongList} from "../api/recommend"
+	import {ERR_OK} from '../api/config'
 	export default{
 		data(){
-			return {
+			return{
 				songs:[]
 			}
 		},
-		components:{
-			MusicList			
-		},
 		computed:{
 			title(){
-				return this.singer.name
+					return this.disc.dissname
 			},
 			bgImage(){
-				return this.singer.avatar
+				return this.disc.imgurl
 			},
 			...mapGetters([
-				'singer'
+				'disc'
 			])
 		},
+		components:{
+			MusicList
+		},
 		created(){
-			this._getDetail()
+			this._getSongList()
 		},
 		methods:{
-			_getDetail(){
-				if(!this.singer.id){
-					this.$router.push('/singer')
+			_getSongList(){
+				if(!this.disc.dissid){
+					this.$router.push('/recommend')
 					return 
 				}
-				getSingerDetail(this.singer.id).then((res)=>{
-					if(res.code===ERR_OK){
-						console.log(res.data.list)
-						this.songs=this.song(res.data.list)
-						console.log(this.songs)
-					}
+				getSongList(this.disc.dissid).then((res)=>{
+					 if (res.code === ERR_OK) {
+					 	console.log(res.cdlist[0].songlist)
+          			this.songs=this._normalizeSongs(res.cdlist[0].songlist)
+          }
 				})
 			},
 			singers(singer){
@@ -57,12 +56,12 @@
 				
 				return ret.join('/')
 			},
-			song(list){
-				let arr=[]
-				for(let i of list){
-					const a=i.musicData
+			_normalizeSongs(list){
+				let ret=[]
+				console.log(list)
+				for(let a of list){
 					if(a.songid && a.albummid){
-						arr.push({
+						ret.push({
 						id:a.songid,
 						mid:a.songmid,
 						singer:this.singers(a.singer),
@@ -76,18 +75,19 @@
 					}
 				}
 				
-				return arr
+				
+				return ret
 			}
+	
 		}
 	}
 </script>
 
-<style>
-
-	.slide-enter-active,.slide-leave-active{
+<style scoped="scoped">
+	.slide-enter-active, .slide-leave-active{
 		transition: all .3s;
 	}
-	.slide-enter,.slide-leave-to{
+	.slide-enter, .slide-leave-to{
 		transform: translate3d(100%,0,0);
 	}
 </style>
