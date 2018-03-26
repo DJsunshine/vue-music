@@ -18,7 +18,7 @@
 		</div>
 		<scroll @scroll="scroll" :probe-type="probeType" :listen-scroll="listenScroll" :data="songs" class="list" ref="list">
 			<div class="song-list-wrapper" style="top: 100px;">
-				<song-list @selects="selectItem" :songs="songs">
+				<song-list :rank="rank" @selects="selectItem" :songs="songs">
 					
 				</song-list>
 			</div>
@@ -48,6 +48,10 @@
 			title:{
 				type:String,
 				default:''
+			},
+			rank:{
+				type:Boolean,
+				default:false
 			}
 		},
 		computed:{
