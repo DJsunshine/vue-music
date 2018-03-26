@@ -258,6 +258,9 @@
 			},
 			togglePlaying(){
 				this.setPlayingState(!this.playing)
+				if(!this.currentLryic){
+					this.currentLryic.togglePlay()
+				}
 			},
 			handleLyric({lineNum, txt}) {
        			 if (!this.$refs.lyricLine) {
@@ -280,6 +283,9 @@
 		},
 		watch:{
 			currentSong(){
+				if(this.currentLryic){
+					this.currentLryic.stop()
+				}
 				this.$nextTick(()=>{
 				this.$refs.audio.play()
 //				if(this.lyric){
