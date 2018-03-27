@@ -20,8 +20,8 @@
 		width: 100%;
 		top: 88px;
 		bottom: 0;
-		background: wheat;
-		color: black;
+		/*background;*/
+		color:hsla(0,0%,100%,.7)
 	}
 	.main{
 		width: 80%;
