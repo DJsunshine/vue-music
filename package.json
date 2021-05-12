@@ -15,7 +15,7 @@
     "js-base64": "^2.4.3",
     "jsonp": "0.2.1",
     "lyric-parser": "^1.0.1",
-    "swiper": "^4.0.7",
+    "swiper": "^6.5.1",
     "vue": "^2.5.2",
     "vue-awesome-swiper": "^3.0.6",
     "vue-lazyload": "^1.0.3",
